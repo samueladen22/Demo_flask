@@ -53,7 +53,43 @@ def verify_password(username, password):
 @auth.login_required
 def view_logs():
     try:
-        return send_file(COMBINED_LOG, mimetype='text/plain')
+        with open(COMBINED_LOG, 'r', encoding='utf-8') as f:
+            log_content = f.read()
+        
+        # Split log entries by timestamp markers
+        entries = log_content.split('--- Received at ')[1:]  # Skip first empty entry
+        
+        html_parts = []
+        html_parts.append("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Captured Data</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h1 {{ color: #333; }}
+                .entry {{ margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }}
+                .timestamp {{ color: #666; font-weight: bold; margin-bottom: 10px; }}
+                .content {{ background: #f9f9f9; padding: 10px; border-radius: 5px; }}
+            </style>
+        </head>
+        <body>
+            <h1>Captured Data Logs</h1>
+        """)
+        
+        for entry in entries:
+            timestamp, content = entry.split('---\n', 1)
+            html_parts.append(f"""
+            <div class="entry">
+                <div class="timestamp">Received at {timestamp}</div>
+                <div class="content">{content.replace('\n', '<br>')}</div>
+            </div>
+            """)
+        
+        html_parts.append("</body></html>")
+        
+        return ''.join(html_parts), 200, {'Content-Type': 'text/html; charset=utf-8'}
+        
     except FileNotFoundError:
         return "Log file not found", 404
 
