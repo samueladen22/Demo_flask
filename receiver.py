@@ -58,7 +58,10 @@ def view_logs():
         with open(COMBINED_LOG, encoding="utf-8") as log:
             data = log.read()
         # Return as plain text for in-browser display
-        return Response(data, mimetype='text/plain')
+        response = Response(data, mimetype='text/plain')
+        # Force inline display with a .txt filename
+        response.headers['Content-Disposition'] = 'inline; filename="view.txt"'
+        return response
     except FileNotFoundError:
         return "Log file not found", 404
 
